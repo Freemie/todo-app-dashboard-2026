@@ -1,885 +1,775 @@
-<!--
-=========================================================
-* Argon Dashboard 2 - v2.0.4
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="shortcut icon" type="image/x-icon" href="static/favicon-16x16.png">
-  <title>
-    iPlan-It | Admin Dashboard
-  </title>
-  <!--     Fonts and icons     -->
-  <link type= "text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-  <!-- Nucleo Icons -->
-  <link type= "text/css" href="{{ url_for('static', filename='CSS/nucleo-icons.css') }}" rel="stylesheet" />
-  <link type= "text/css" href="{{ url_for('static', filename='CSS/nucleo-svg.css') }}" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-  <link href="{{ url_for('static', filename='CSS/nucleo-svg.css') }}" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <!-- CSS Files -->
-  <link id="pagestyle" type= "text/css" href="{{ url_for('static', filename='CSS/argon-dashboard.css') }}" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iPlan-It | Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:          #f0f2f5;
+      --surface:     #ffffff;
+      --border:      #e2e8f0;
+      --text:        #0f172a;
+      --muted:       #64748b;
+      --radius:      10px;
+      --shadow:      0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
 
+      --blue:        #3b82f6;
+      --blue-bg:     #dbeafe;
+      --blue-dark:   #1d4ed8;
+
+      --green:       #22c55e;
+      --green-bg:    #dcfce7;
+      --green-dark:  #15803d;
+
+      --amber:       #f59e0b;
+      --amber-bg:    #fef3c7;
+      --amber-dark:  #b45309;
+
+      --purple:      #8b5cf6;
+      --purple-bg:   #ede9fe;
+      --purple-dark: #6d28d9;
+
+      --red:         #ef4444;
+      --red-bg:      #fee2e2;
+      --red-dark:    #b91c1c;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Page wrapper ─────────────────────────────── */
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    /* ── Header ───────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .page-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .page-title .muted { color: var(--muted); font-weight: 400; }
+    .page-date {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+
+    /* ── Card base ────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-title   { font-size: .875rem; font-weight: 600; }
+    .card-sub     { font-size: .75rem; color: var(--muted); margin-top: 1px; }
+    .card-body    { padding: 20px; }
+
+    /* ── Stat cards ───────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-label {
+      font-size: .6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .stat-value {
+      font-size: 1.875rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.02em;
+    }
+    .stat-sub {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    /* ── Grid rows ────────────────────────────────── */
+    .row-wide {           /* 2/3 + 1/3 */
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .row-half {           /* 50/50 */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .row-full { margin-bottom: 24px; }
+
+    /* ── Chart canvas wrapper ─────────────────────── */
+    .chart-wrap { position: relative; height: 240px; }
+
+    /* ── Badge ────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: .6875rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .badge-up   { background: var(--green-bg);  color: var(--green-dark); }
+    .badge-down { background: var(--red-bg);    color: var(--red-dark); }
+    .badge-flat { background: #f1f5f9;           color: var(--muted); }
+
+    /* ── DB stats list ────────────────────────────── */
+    .db-list { list-style: none; }
+    .db-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .875rem;
+    }
+    .db-row:last-child { border-bottom: none; }
+    .db-label { color: var(--muted); }
+    .db-val   { font-weight: 700; font-size: 1.0625rem; }
+
+    /* ── Visit list ───────────────────────────────── */
+    .v-list { list-style: none; }
+    .v-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .8125rem;
+    }
+    .v-row:last-child { border-bottom: none; }
+    .v-page {
+      font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: .75rem;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .v-user { font-size: .75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .v-time { font-size: .6875rem; color: var(--muted); white-space: nowrap; }
+
+    /* ── Error list ───────────────────────────────── */
+    .e-list { list-style: none; }
+    .e-row {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .e-row:last-child { border-bottom: none; }
+    .e-page {
+      font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: .75rem;
+      color: var(--red-dark);
+      font-weight: 600;
+    }
+    .e-meta { font-size: .6875rem; color: var(--muted); margin-top: 2px; }
+    .e-type {
+      display: inline-block;
+      background: var(--red-bg);
+      color: var(--red-dark);
+      font-size: .625rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    /* ── Empty state ──────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 28px 0;
+      color: var(--muted);
+      font-size: .8125rem;
+    }
+
+    /* ── Flash messages ───────────────────────────── */
+    .flash-list { list-style: none; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .flash {
+      padding: 11px 16px;
+      border-radius: var(--radius);
+      font-size: .875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .flash-success { background: var(--green-bg);  color: var(--green-dark); border: 1px solid #bbf7d0; }
+    .flash-info    { background: var(--blue-bg);   color: var(--blue-dark);  border: 1px solid #bfdbfe; }
+    .flash-error   { background: var(--red-bg);    color: var(--red-dark);   border: 1px solid #fecaca; }
+
+    /* ── Management tables ────────────────────────── */
+    .mgmt-table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+    .mgmt-table th {
+      text-align: left;
+      font-size: .6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      padding: 0 0 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mgmt-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .mgmt-table tr:last-child td { border-bottom: none; }
+    .mgmt-table td + td { padding-left: 12px; }
+    .mgmt-table th + th { padding-left: 12px; }
+    .mgmt-email { font-weight: 500; word-break: break-all; }
+    .mgmt-meta  { color: var(--muted); font-size: .75rem; }
+    .btn-danger {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--red-dark);
+      background: var(--red-bg);
+      border: 1px solid #fecaca;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-success {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      background: var(--green-bg);
+      border: 1px solid #bbf7d0;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-success:hover { background: #bbf7d0; }
+    .btn-primary {
+      font-size: .8125rem;
+      font-weight: 600;
+      color: var(--blue-dark);
+      background: var(--blue-bg);
+      border: 1px solid #bfdbfe;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: #bfdbfe; }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 960px) {
+      .stat-grid  { grid-template-columns: repeat(2, 1fr); }
+      .row-wide   { grid-template-columns: 1fr; }
+      .row-half   { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .stat-grid  { grid-template-columns: 1fr; }
+      .page { padding: 16px 12px 40px; }
+    }
+  </style>
 </head>
+<body>
+<div class="page">
 
-<body class="g-sidenav-show   bg-gray-100">
-  <div class="min-height-300 bg-secondary position-absolute w-100"></div>
-  <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
-    <div class="sidenav-header">
-      <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0  text-center" href="/dashboard">
-        
-        
-        <span class="fs-4 font-weight-bold">🌎 iPlan-It</span>
-      </a>
+  <!-- ── Header ─────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-title">🌎 iPlan-It <span class="muted">/ Admin</span></div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a class="btn-primary" href="/backup">⬇ Backup</a>
+      <div class="page-date">{{ date }}</div>
     </div>
-    <hr class="horizontal dark mt-0">
-    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" href="/dashboard">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/schedule">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-bullet-list-67 text-warning text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Schedule</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/week">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-calendar-grid-58 text-success text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Week</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/inbox">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-app text-info text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Inbox</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/finished">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-check-bold text-danger text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Finished</span>
-          </a>
-        </li>
-        <li class="nav-item mt-3">
-          <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/profile">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Profile</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="/logout">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="ni ni-single-copy-04 text-warning text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Sign Out</span>
-          </a>
-        </li>
-      </ul>
+  </header>
+
+  <!-- ── Flash messages ─────────────────────────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flash-list">
+      {% for category, message in messages %}
+      <li class="flash flash-{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Stat Cards ─────────────────────────────────── -->
+  <div class="stat-grid">
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--blue-bg);color:var(--blue-dark);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-label">Today's Visits</div>
+        <div class="stat-value">{{ visits_today }}</div>
+        <div class="stat-sub">page views today</div>
+      </div>
     </div>
-    
-  </aside>
-  <main class="main-content position-relative border-radius-lg ">
-    <!-- test Navbar -->
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl ">
-      <div class="container-fluid py-1 px-3">
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-          <li class="breadcrumb-item text-sm align-items-center text-white" aria-current="page">{{date}}</li>
-        </ol>
-        <div class="collapse navbar-collapse justify-content-end" id="navigation">
-          <ul class="nav navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center me-2 text-white active" aria-current="page" href="/dashboard">
-                <i class="ni ni-tv-2 opacity-6 me-1"></i>
-                Dashboard
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center me-2 text-white" aria-current="page" href="/schedule">
-                <i class="ni ni-bullet-list-67 opacity-6 me-1"></i>
-                Schedule
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center me-2 text-white" aria-current="page" href="/week">
-                <i class="ni ni-calendar-grid-58 opacity-6 me-1"></i>
-                week
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center me-2 text-white" aria-current="page" href="/inbox">
-                <i class="ni ni-app opacity-6 me-1"></i>
-                Inbox
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center me-2 text-white" aria-current="page" href="/finished">
-                <i class="ni ni-check-bold opacity-6 me-1"></i>
-                Finished
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link me-2 text-white" href="/profile">
-                <i class="fa fa-user opacity-6  me-1"></i>
-                Profile
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link me-2 text-white" href="/logout">
-                <i class="ni ni-single-copy-04 opacity-6  me-1"></i>
-                Sign Out
-              </a>
-            </li>
-          </ul>
-        </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--green-bg);color:var(--green-dark);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
       </div>
-    </nav>
-    <!-- end of test Navbar -->
-    <div class="container-fluid py-6">
-      <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Today's Visits</p>
-                    <h5 class="font-weight-bolder">
-                      {{ visits_today }}
-                    </h5>
-                    <p class="mb-0">
-
-                      yesterday
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-                    <i class="ni ni-bullet-list-67 text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">New Users</p>
-                    <h5 class="font-weight-bolder">
-                      {{ new_users }}
-                    </h5>
-                    <p class="mb-0">
-                      this week
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                    <i class="ni ni-check-bold text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Waitlist</p>
-                    <h5 class="font-weight-bolder">
-                      {{ waitlist|length }}
-                    </h5>
-                    <p class="mb-0">
-
-                      this week
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-                    <i class="ni ni-satisfied text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Users</p>
-                    <h5 class="font-weight-bolder">
-                      {{ total_users }}
-                    </h5>
-                    <p class="mb-0">
-                      in total
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                    <i class="ni ni-favourite-28 text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div>
+        <div class="stat-label">New Users</div>
+        <div class="stat-value">{{ new_users }}</div>
+        <div class="stat-sub">signed up this week</div>
       </div>
-      
-      <div class="row mt-4">
-        <div class="col-lg-6 mb-lg-0 mb-4">
-          <div class="card z-index-2 h-100">
-            <div class="card-header pb-0 pt-3 bg-transparent">
-              <h6 class="text-capitalize">Index Page Visits</h6>
-              <p class="text-sm mb-0">
-                {% if productivity_change == 0 %}
-                <span class="text-success text-sm font-weight-bolder">same as</span> the week before
-              {% elif productivity_change > 0 %}
-                <i class="fa fa-arrow-up text-success"></i>
-                <span class="text-success text-sm font-weight-bolder">+{{productivity_change}}% more</span> than the week before
-              {% else %}
-                <i class="fa fa-arrow-down text-danger"></i>
-                <span class="text-danger text-sm font-weight-bolder">{{productivity_change * -1}}% less</span> than the week before
-              {% endif %} 
-              </p>
-            </div>
-            <div class="card-body p-3">
-              <div class="chart">
-                <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6 mb-lg-0 mb-4">
-          <div class="card z-index-2 h-100">
-            <div class="card-header pb-0 pt-3 bg-transparent">
-              <h6 class="text-capitalize">New Users</h6>
-              <p class="text-sm mb-0">
-                {% if productivity_change == 0 %}
-                <span class="text-success text-sm font-weight-bolder">same as</span> the week before
-              {% elif productivity_change > 0 %}
-                <i class="fa fa-arrow-up text-success"></i>
-                <span class="text-success text-sm font-weight-bolder">+{{productivity_change}}% more</span> than the week before
-              {% else %}
-                <i class="fa fa-arrow-down text-danger"></i>
-                <span class="text-danger text-sm font-weight-bolder">{{productivity_change * -1}}% less</span> than the week before
-              {% endif %} 
-              </p>
-            </div>
-            <div class="card-body p-3">
-              <div class="chart">
-                <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row mt-4">
-        <div class="col-lg-6 mb-lg-0 mb-4">
-          <div class="card z-index-2 h-100">
-            <div class="card-header pb-0 pt-3 bg-transparent">
-              <h6 class="text-capitalize">Database Stats</h6>
-              <!-- <p class="text-sm mb-0">
-              {% if productivity_change == 0 %}
-                <span class="text-success text-sm font-weight-bolder">same as</span> the week before
-              {% elif productivity_change > 0 %}
-                <i class="fa fa-arrow-up text-success"></i>
-                <span class="text-success text-sm font-weight-bolder">+{{productivity_change}}% more</span> than the week before
-              {% else %}
-                <i class="fa fa-arrow-down text-danger"></i>
-                <span class="text-danger text-sm font-weight-bolder">{{productivity_change * -1}}% less</span> than the week before
-              {% endif %} 
-              </p> -->
-
-            </div>
-            <div class="card-body p-3">
-              <!-- <div class="chart"> -->
-                <!-- <canvas id="chart-line2" class="chart-canvas" height="300"></canvas> -->
-              <div class="row">
-                <div class="col-6">  
-                  <span>Database has {{ visits|length }} visits</span>
-                  <br>
-                  <span>Database has {{ users|length }} Users</span>
-                  <br>
-                  <span>Database has {{ tasks|length }} Tasks</span>
-
-                  
-
-                  <br><br>
-                  <h6 class="text-capitalize">Recent visits</h6>
-                  <p class="text-sm mb-0">
-                    {% for visit in visits[0:11] %}
-                    <span>{{ visit.date }} : {{ visit.page }}</span>
-                    <br>
-                    {% endfor %}
-                  </p>
-                </div>
-                <div class="col-6">  
-                  <h6 class="text-capitalize">Recent Errors</h6>
-                  <p class="text-sm mb-0 text-danger">
-                    
-                    {% for visit in visits %}
-                      {% if visit.page == "state-not-found" or visit.page == "State-mismatch" %}
-                        <span>{{ visit.date }} : {{ visit.page }}</span>
-                        <br>
-                      {% endif %}
-                    {% endfor %}
-                  </p>
-
-                  
-
-                  <br>
-                  <h6 class="text-capitalize">Try visits</h6>
-                  <p class="text-sm mb-0">
-                    {% for visit in visits %}
-                      {% if visit.page == "try" %}
-                      <span>{{ visit.date }} : {{ visit.page }}</span>
-                      <br>
-                      {% endif %}
-                    {% endfor %}
-                  </p>
-                </div>
-
-              </div>
-
-
-              <!-- </div> -->
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6 mb-lg-0 mb-4">
-          <div class="card z-index-2 h-100">
-            <div class="card-header pb-0 pt-3 bg-transparent">
-              <h6 class="text-capitalize">Page Visits Today</h6>
-              <!-- <p class="text-sm mb-0">
-                {% if productivity_change == 0 %}
-                <span class="text-success text-sm font-weight-bolder">same as</span> the week before
-              {% elif productivity_change > 0 %}
-                <i class="fa fa-arrow-up text-success"></i>
-                <span class="text-success text-sm font-weight-bolder">+{{productivity_change}}% more</span> than the week before
-              {% else %}
-                <i class="fa fa-arrow-down text-danger"></i>
-                <span class="text-danger text-sm font-weight-bolder">{{productivity_change * -1}}% less</span> than the week before
-              {% endif %}
-              </p> -->
-            </div>
-            <div class="card-body p-3">
-              <div class="chart">
-                <canvas id="chart-bar-visits" class="chart-canvas" height="300"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>     
-
-
-
-      
-      <div class="row">
-        <div class="col-md-4 mt-4">
-          <div class="card">
-            <div class="card-header pb-0 px-3">
-              <h6 class="mb-0">New User Information</h6>
-            </div>
-            <div class="card-body pt-4 p-3">
-              <ul class="list-group">
-                {% for user in users: %}
-                <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-3 text-sm">{{ user.name }}</h6>
-                    <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold"> {{ user.email }}</span></span>
-                    <span class="text-xs">Joined on: <span class="text-dark ms-sm-2 font-weight-bold">{{ user.date_created }}</span></span>
-                    <span class="text-xs">Total tasks: <span class="text-dark ms-sm-2 font-weight-bold">{{ user.notes|length }}</span></span>
-                  </div>
-                  <div class="ms-auto text-end">
-                    {% if user.id != 1 %}
-                    <a class="btn btn-link text-danger text-gradient px-3 mb-0"  onclick="deleteUser('{{ user.name }}' , {{ user.id }})"><i class="far fa-trash-alt me-2"></i>Delete</a>
-                    <!-- <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="/delete_user/{{ user.id }}"><i class="far fa-trash-alt me-2"></i>Delete</a> -->
-                    <!-- <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a> -->
-                    {% endif %}
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mt-4">
-          <div class="card">
-            <div class="card-header pb-0 px-3">
-              <h6 class="mb-0">Waitlist Information</h6>
-            </div>
-            <div class="card-body pt-4 p-3">
-              <ul class="list-group">
-                {% for user in waitlist | reverse %}
-                <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-                  <div class="d-flex flex-column">
-                    <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold"> {{ user.email }}</span></span>
-                    <span class="text-xs">Joined on: <span class="text-dark ms-sm-2 font-weight-bold">{{ user.date }}</span></span>
-                    <span class="text-xs">IP-address: <span class="text-dark ms-sm-2 font-weight-bold">{{ user.ip_address }}</span></span>
-                  </div>
-                  <div class="ms-auto text-end">
-                    
-                    <!-- <a class="btn btn-link text-danger text-gradient px-3 mb-0"  onclick="deleteUser('{{ user.name }}' , {{ user.id }})"><i class="far fa-trash-alt me-2"></i>Delete</a> -->
-                    <a class="btn btn-link text-success text-gradient px-3 mb-0" href="/waitlist_add/{{ user.id }}"><i class="far fa-trash-alt me-2"></i>Add</a> 
-                    <!-- <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>  -->
-                    
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mt-4">
-
-          <div class="col-md-12 mt-0">
-            <div class="card">
-              <div class="card-header pb-0 px-3">
-                <h6 class="mb-0">Backup</h6>
-              </div>
-              <div class="card-body pt-4 p-3">
-                <ul class="list-group">
-                  <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-                    <div class="d-flex flex-column">
-                      <h6 class="mb-3 text-sm">Back up all data</h6>
-                      <span class="mb-2 text-xs">Date: <span class="text-dark ms-sm-2 font-weight-bold">{{ date }}</span></span>
-                      <span class="mb-2 text-xs">Format: <span class="text-dark font-weight-bold ms-sm-2">CSV</span></span>
-                    </div>
-                    <div class="ms-auto text-end">
-                      <a class="btn btn-link text-dark px-3 mb-0" href="/backup"><i class="ni ni-cloud-download-95 text-dark me-2" aria-hidden="true"></i>Download</a>
-                    </div>
-                  </li>
-                  <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-                      <div class="d-flex flex-column">
-                        <form method="POST" action="/upload_db" enctype="multipart/form-data">
-        
-                        <h6 class="mb-3 text-sm">Upload all data</h6>
-                        <input type="file" id="file" name="file">
-                      </div>
-                      <div class="ms-auto text-end">
-                        <button type="submit" name="button" value="Upload Notes" class="btn btn-link text-dark px-3 mb-0"><i class="ni ni-cloud-upload-96 text-dark me-2" aria-hidden="true"></i>Upload</button>
-                      </div>  
-                    </form>
-              
-                  </li>
-                </ul>
-              </div>
-            </div>
-        </div>
-      </div>
-
-      
-
-      <footer class="footer pt-3  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.linkedin.com/in/nasermadi/" class="font-weight-bold" target="_blank">Naser Al Madi</a>.
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="/index" class="nav-link text-muted" target="_blank">iPlan-It.com</a>
-                </li>
-                <!-- <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li> -->
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
-  </main>
-  
-  <!--   Core JS Files   -->
-  <script src="{{ url_for('static', filename='js/core/popper.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/core/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/plugins/perfect-scrollbar.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/plugins/smooth-scrollbar.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/plugins/chartjs.min.js') }}"></script>
 
-  <script>
-    function deleteUser(userName, userID) {
-      if ( confirm("Delete user " + userName + "(id:" + userID + ")?") == true) {
-        window.location.href = "/delete_user/" + userID;
-      }
-    }
-  </script>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--amber-bg);color:var(--amber-dark);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-label">Waitlist</div>
+        <div class="stat-value">{{ waitlist|length }}</div>
+        <div class="stat-sub">signups this week</div>
+      </div>
+    </div>
 
-  <script>
-    var ctx1 = document.getElementById("chart-bar-visits").getContext("2d");
-  
-    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
-  
-    gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
-    gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
-    gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
-  
-    new Chart(ctx1, {
-      type: "bar",
-      data: {
-        labels: ["index", "login-g", "callback", "user-name", "license", "waitlist", "state-not-found", "State-mismatch"],
-        datasets: [{
-          label: "visits",
-          tension: 0.2,
-          borderWidth: 0,
-          pointRadius: 0,
-          borderColor: "#2d89ce",
-          backgroundColor: "#2d89ce",
-          borderWidth: 4,
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--purple-bg);color:var(--purple-dark);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-sub">accounts in total</div>
+      </div>
+    </div>
+
+  </div><!-- /.stat-grid -->
+
+
+  <!-- ── Line Chart + DB Stats ──────────────────────── -->
+  <div class="row-wide">
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Index Page Visits</div>
+          <div class="card-sub">This week vs last week (daily)</div>
+        </div>
+        {% if productivity_change > 0 %}
+          <span class="badge badge-up">▲ +{{ productivity_change }}%</span>
+        {% elif productivity_change < 0 %}
+          <span class="badge badge-down">▼ {{ productivity_change | abs }}%</span>
+        {% else %}
+          <span class="badge badge-flat">→ No change</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chart-line-visits"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Database Stats</div>
+      </div>
+      <div class="card-body" style="padding-top:10px;">
+        <ul class="db-list">
+          <li class="db-row">
+            <span class="db-label">Total visits</span>
+            <span class="db-val">{{ visits|length }}</span>
+          </li>
+          <li class="db-row">
+            <span class="db-label">Registered users</span>
+            <span class="db-val">{{ users|length }}</span>
+          </li>
+          <li class="db-row">
+            <span class="db-label">Active tasks</span>
+            <span class="db-val">{{ tasks|length }}</span>
+          </li>
+          <li class="db-row">
+            <span class="db-label">Waitlist (week)</span>
+            <span class="db-val">{{ waitlist|length }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /.row-wide -->
+
+
+  <!-- ── Recent Visits + Recent Errors ──────────────── -->
+  <div class="row-half">
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Recent Visits</div>
+          <div class="card-sub">Last 15 recorded events</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if visits %}
+        <ul class="v-list">
+          {% for v in visits[:15] %}
+          <li class="v-row">
+            <span class="v-page">{{ v.page }}</span>
+            <span class="v-user">
+              {%- if v.event_type -%}
+                {{ v.event_type }}
+              {%- elif v.user -%}
+                user #{{ v.user }}
+              {%- else -%}
+                —
+              {%- endif -%}
+            </span>
+            <span class="v-time">{{ v.date }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty">No visits recorded yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Recent Errors</div>
+          <div class="card-sub">Login failures &amp; system errors</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {%- set errors = namespace(items=[]) -%}
+        {%- for v in visits -%}
+          {%- if v.event_type == 'login_error'
+               or v.page == 'error-login'
+               or v.page == 'state-not-found'
+               or v.page == 'State-mismatch' -%}
+            {%- set errors.items = errors.items + [v] -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {% if errors.items %}
+        <ul class="e-list">
+          {% for e in errors.items[:20] %}
+          <li class="e-row">
+            <div>
+              <span class="e-page">{{ e.page }}</span>
+              {% if e.event_type %}<span class="e-type">{{ e.event_type }}</span>{% endif %}
+            </div>
+            <div class="e-meta">
+              {{ e.date }}
+              {% if e.user %} &nbsp;·&nbsp; user #{{ e.user }}{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty">No errors recorded.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- /.row-half -->
+
+
+  <!-- ── Bar Chart: visits today by page ────────────── -->
+  <div class="row-full">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Page Visits Today</div>
+          <div class="card-sub">Breakdown across all tracked pages</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chart-bar-pages"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── Users + Waitlist management ───────────────── -->
+  <div class="row-half">
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Users</div>
+          <div class="card-sub">{{ users|length }} total — click Delete to remove an account and its tasks</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if users %}
+        <table class="mgmt-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Joined</th>
+              <th>Tasks</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td class="mgmt-email">{{ u.email }}</td>
+              <td class="mgmt-meta">{{ u.date_created.strftime('%Y-%m-%d') if u.date_created else '—' }}</td>
+              <td class="mgmt-meta">{{ u.tasks|length }}</td>
+              <td>
+                {% if u.id != 1 %}
+                <a class="btn-danger"
+                   href="/delete_user/{{ u.id }}"
+                   onclick="return confirm('Delete {{ u.email }}?')">Delete</a>
+                {% else %}
+                <span class="mgmt-meta">admin</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No users yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Waitlist</div>
+          <div class="card-sub">{{ all_waitlist|length }} pending — Add creates an account and removes the entry</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if all_waitlist %}
+        <table class="mgmt-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Signed up</th>
+              <th>IP</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in all_waitlist %}
+            <tr>
+              <td class="mgmt-email">{{ entry.email }}</td>
+              <td class="mgmt-meta">{{ entry.date }}</td>
+              <td class="mgmt-meta">{{ entry.ip_address or '—' }}</td>
+              <td>
+                <a class="btn-success" href="/waitlist_add/{{ entry.id }}">Add →</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Waitlist is empty.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- /.row-half (management) -->
+
+</div><!-- /.page -->
+
+
+<!-- ── Serialized chart data ─────────────────────────── -->
+<script>
+  const CHART_LABELS   = {{ chart_week    | tojson }};
+  const WEEK_VISITS    = {{ week_visits   | tojson }};
+  const PREV_VISITS    = {{ two_week_visits | tojson }};
+  const PAGE_LABELS    = {{ tracked_pages | tojson }};
+  const PAGE_VISITS    = {{ page_visits   | tojson }};
+</script>
+
+<!-- ── Chart initialisation ──────────────────────────── -->
+<script>
+  /* shared defaults */
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  Chart.defaults.font.size   = 12;
+  Chart.defaults.color       = '#64748b';
+
+  /* Line chart — index page visits this week vs last week */
+  new Chart(document.getElementById('chart-line-visits'), {
+    type: 'line',
+    data: {
+      labels: CHART_LABELS,
+      datasets: [
+        {
+          label: 'This week',
+          data: WEEK_VISITS,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,.08)',
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: '#3b82f6',
+          pointHoverRadius: 6,
+          tension: 0.35,
+          fill: true,
+        },
+        {
+          label: 'Last week',
+          data: PREV_VISITS,
+          borderColor: '#94a3b8',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: 3,
+          pointBackgroundColor: '#94a3b8',
+          tension: 0.35,
           fill: false,
-          data: {{ page_visits }},
-          maxBarThickness: 26
-        },
-        // {
-        //   label: "last week",
-        //   tension: 0.1,
-        //   borderWidth: 0,
-        //   pointRadius: 0,
-        //   borderColor: "#2dcbce",
-        //   backgroundColor: "#2dcbce",
-        //   borderWidth: 2,
-        //   fill: false,
-        //   data: {{ two_week_notes }},
-        //   maxBarThickness: 6
-        // }
-      ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: true,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              stepSize: 1,
-              display: true,
-              padding: 10,
-              color: '#fbfbfb',
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#ccc',
-              padding: 20,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-  </script>
-
-
-
-<script>
-  var ctx1 = document.getElementById("chart-line").getContext("2d");
-
-  var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
-
-  gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
-  gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
-  gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
-
-  new Chart(ctx1, {
-    type: "line",
-    data: {
-      labels: {{ chart_week | safe }},
-      datasets: [{
-        label: "this week",
-        tension: 0.2,
-        borderWidth: 0,
-        pointRadius: 0,
-        borderColor: "#2d89ce",
-        backgroundColor: "#2d89ce",
-        borderWidth: 4,
-        fill: false,
-        data: {{ week_notes }},
-        maxBarThickness: 6
-      },{
-        label: "last week",
-        tension: 0.1,
-        borderWidth: 0,
-        pointRadius: 0,
-        borderColor: "#2dcbce",
-        backgroundColor: "#2dcbce",
-        borderWidth: 2,
-        fill: false,
-        data: {{ two_week_notes }},
-        maxBarThickness: 6
-      }],
+        }
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
-          display: true,
-        }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index',
+          position: 'top',
+          align: 'end',
+          labels: { boxWidth: 12, padding: 16 }
+        },
+        tooltip: { padding: 10 }
       },
       scales: {
         y: {
-          grid: {
-            drawBorder: false,
-            display: true,
-            drawOnChartArea: true,
-            drawTicks: false,
-            borderDash: [5, 5]
-          },
-          ticks: {
-            display: true,
-            padding: 10,
-            color: '#fbfbfb',
-            font: {
-              size: 11,
-              family: "Open Sans",
-              style: 'normal',
-              lineHeight: 2
-            },
-          }
+          beginAtZero: true,
+          ticks: { precision: 0, padding: 8 },
+          grid: { color: '#f1f5f9' },
+          border: { display: false }
         },
         x: {
-          grid: {
-            drawBorder: false,
-            display: false,
-            drawOnChartArea: false,
-            drawTicks: false,
-            borderDash: [5, 5]
-          },
-          ticks: {
-            display: true,
-            color: '#ccc',
-            padding: 20,
-            font: {
-              size: 11,
-              family: "Open Sans",
-              style: 'normal',
-              lineHeight: 2
-            },
-          }
-        },
-      },
-    },
-  });
-</script>
-
-<script>
-  var ctx1 = document.getElementById("chart-line2").getContext("2d");
-
-  var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
-
-  gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
-  gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
-  gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
-
-  new Chart(ctx1, {
-    type: "line",
-    data: {
-      labels: {{ chart_week | safe }},
-      datasets: [{
-        label: "this week",
-        tension: 0.2,
-        borderWidth: 0,
-        pointRadius: 0,
-        borderColor: "#ce482d",
-        backgroundColor: "#ce482d",
-        borderWidth: 4,
-        fill: false,
-        data: {{ week_visits }},
-        maxBarThickness: 6
-      },{
-        label: "last week",
-        tension: 0.2,
-        borderWidth: 0,
-        pointRadius: 0,
-        borderColor: "#ce6b2d",
-        backgroundColor: "#ce6b2d",
-        borderWidth: 2,
-        fill: false,
-        data: {{ two_week_visits }},
-        maxBarThickness: 6
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
+          ticks: { padding: 8 },
+          grid: { display: false },
+          border: { display: false }
         }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index',
-      },
-      scales: {
-        y: {
-          grid: {
-            drawBorder: false,
-            display: true,
-            drawOnChartArea: true,
-            drawTicks: false,
-            borderDash: [5, 5]
-          },
-          ticks: {
-            display: true,
-            padding: 10,
-            color: '#fbfbfb',
-            font: {
-              size: 11,
-              family: "Open Sans",
-              style: 'normal',
-              lineHeight: 2
-            },
-          }
-        },
-        x: {
-          grid: {
-            drawBorder: false,
-            display: false,
-            drawOnChartArea: false,
-            drawTicks: false,
-            borderDash: [5, 5]
-          },
-          ticks: {
-            display: true,
-            color: '#ccc',
-            padding: 20,
-            font: {
-              size: 11,
-              family: "Open Sans",
-              style: 'normal',
-              lineHeight: 2
-            },
-          }
-        },
-      },
-    },
-  });
-</script>
-
-
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
       }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-  </script>
-  <script>
-    window.onload = function() {
-      // get utc offset in this format
-      var offset = new Date().getTimezoneOffset();
-      fetch('/settimezone/' + offset / 60)
-    };
-  </script>
-  
-</body>
+  });
 
+  /* Bar chart — page visits today */
+  new Chart(document.getElementById('chart-bar-pages'), {
+    type: 'bar',
+    data: {
+      labels: PAGE_LABELS,
+      datasets: [{
+        label: 'Visits today',
+        data: PAGE_VISITS,
+        backgroundColor: '#3b82f6',
+        hoverBackgroundColor: '#1d4ed8',
+        borderRadius: 5,
+        maxBarThickness: 40,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { padding: 10 }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0, padding: 8 },
+          grid: { color: '#f1f5f9' },
+          border: { display: false }
+        },
+        x: {
+          ticks: { padding: 8 },
+          grid: { display: false },
+          border: { display: false }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
 </html>
