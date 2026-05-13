@@ -654,6 +654,102 @@
 
   </div><!-- /.row-half (management) -->
 
+
+  <!-- ── New Users + Waitlist Emails (this week) ───────── -->
+  <div class="row-half">
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">New Users</div>
+          <div class="card-sub">{{ new_users_list|length }} account{{ 's' if new_users_list|length != 1 }} created this week</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if new_users_list %}
+        <table class="mgmt-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Date Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in new_users_list %}
+            <tr>
+              <td class="mgmt-email">{{ u.name }}</td>
+              <td class="mgmt-meta">{{ u.email }}</td>
+              <td class="mgmt-meta">{{ u.date_created.strftime('%Y-%m-%d %H:%M') if u.date_created else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No new users this week.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Waitlist Emails</div>
+          <div class="card-sub">{{ waitlist|length }} signup{{ 's' if waitlist|length != 1 }} this week</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if waitlist %}
+        <table class="mgmt-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Signed Up</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in waitlist %}
+            <tr>
+              <td class="mgmt-email">{{ entry.email }}</td>
+              <td class="mgmt-meta">{{ entry.date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No waitlist signups this week.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- /.row-half (new users + waitlist) -->
+
+
+  <!-- ── Database Backup ───────────────────────────────── -->
+  <div class="row-full">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Database Backup</div>
+          <div class="card-sub">Download a copy of the live SQLite database file</div>
+        </div>
+      </div>
+      <div class="card-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <a class="btn-primary" href="/backup_db" style="display:inline-flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download .db file
+        </a>
+        <span style="font-size:.8125rem;color:var(--muted);">
+          Downloads the raw <code style="font-family:'SF Mono',monospace;font-size:.75rem;background:#f8fafc;border:1px solid var(--border);padding:1px 5px;border-radius:3px;">todo.db</code> SQLite file — open with DB Browser, DBeaver, or any SQLite client.
+        </span>
+      </div>
+    </div>
+  </div><!-- /.row-full (backup) -->
+
 </div><!-- /.page -->
 
 

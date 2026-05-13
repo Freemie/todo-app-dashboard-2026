@@ -122,6 +122,10 @@ def dashboard():
     all_tasks = Task.query.all()
     all_waitlist = Waitlist.query.order_by(Waitlist.timestamp.desc()).all()
 
+    new_users_list = User.query.filter(
+        db.func.date(User.date_created) >= week_start
+    ).order_by(User.date_created.desc()).all()
+
     return render_template(
         'admin.html',
         date=datetime.datetime.now().strftime("%B %d, %Y"),
@@ -134,6 +138,7 @@ def dashboard():
         tasks=all_tasks,
         waitlist=waitlist_week,
         all_waitlist=all_waitlist,
+        new_users_list=new_users_list,
         chart_week=chart_week,
         week_notes=week_notes,
         two_week_notes=two_week_notes,
@@ -167,7 +172,7 @@ def api_create_task():
 @main_blueprint.route('/api/v1/tasks/<int:task_id>', methods=['PATCH'])
 @login_required
 def api_toggle_task(task_id):
-    task = Task.query.get(task_id)
+    task = db.session.get(Task, task_id)
     if task is None:
         return {"error": "Task not found"}, 404
     if task.user_id != current_user.id:
@@ -181,7 +186,7 @@ def api_toggle_task(task_id):
 @main_blueprint.route('/remove/<int:task_id>')
 @login_required
 def remove(task_id):
-    task = Task.query.get(task_id)
+    task = db.session.get(Task, task_id)
     if task is None:
         return redirect(url_for('main.todo'))
     db.session.delete(task)
@@ -198,7 +203,7 @@ def delete_user(user_id):
     if user_id == 1:
         flash('Cannot delete the primary admin account.', 'error')
         return redirect(url_for('main.dashboard'))
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if user is None:
         return redirect(url_for('main.dashboard'))
     email = user.email
@@ -214,7 +219,7 @@ def delete_user(user_id):
 @main_blueprint.route('/waitlist_add/<int:entry_id>')
 @login_required
 def waitlist_add(entry_id):
-    entry = Waitlist.query.get(entry_id)
+    entry = db.session.get(Waitlist, entry_id)
     if entry is None:
         return redirect(url_for('main.dashboard'))
     if User.query.filter_by(email=entry.email).first():
@@ -266,4 +271,13 @@ def backup():
     zip_buf.seek(0)
     filename = f'iplanit-backup-{datetime.datetime.now().strftime("%Y%m%d-%H%M")}.zip'
     return send_file(zip_buf, mimetype='application/zip',
+                     as_attachment=True, download_name=filename)
+
+
+@main_blueprint.route('/backup_db')
+@login_required
+def backup_db():
+    db_path = db.engine.url.database
+    filename = f'todo-{datetime.datetime.now().strftime("%Y%m%d-%H%M")}.db'
+    return send_file(db_path, mimetype='application/x-sqlite3',
                      as_attachment=True, download_name=filename)
